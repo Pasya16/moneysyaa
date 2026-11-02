@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catatan Keuangan Soft Pastel</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- CDN untuk cetak PDF otomatis -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>My Wallet Tracker ✨</h1>
+      <p>Pencatat Alokasi GoPay & Tabungan BNI</p>
+    </header>
+
+    <!-- Cards Ringkasan Saldo -->
+    <section class="cards-grid">
+      <div class="card card-gopay">
+        <span class="card-tag">Uang Harian</span>
+        <h3>Saldo GoPay</h3>
+        <p class="balance" id="saldo-gopay">Rp 0</p>
+      </div>
+      <div class="card card-bni">
+        <span class="card-tag">Brankas Tabungan</span>
+        <h3>Tabungan BNI</h3>
+        <p class="balance" id="saldo-bni">Rp 0</p>
+      </div>
+      <div class="card card-total">
+        <span class="card-tag">Total Aset</span>
+        <h3>Total Kekayaan</h3>
+        <p class="balance" id="saldo-total">Rp 0</p>
+      </div>
+    </section>
+
+    <!-- Form Input Transaksi -->
+    <section class="form-section">
+      <h2>+ Catat Transaksi</h2>
+      <form id="finance-form">
+        <div class="form-group">
+          <label for="tipe">Jenis Transaksi</label>
+          <select id="tipe" required>
+            <option value="pengeluaran">Pengeluaran (Potong GoPay)</option>
+            <option value="pemasukan">Pemasukan / Top-Up (Ke GoPay)</option>
+            <option value="tabung">Nabung (Transfer GoPay → BNI)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="nominal">Nominal (Rp)</label>
+          <input type="number" id="nominal" placeholder="Contoh: 25000" required>
+        </div>
+
+        <div class="form-group">
+          <label for="tujuan">Jenis Media / Penerima</label>
+          <select id="tujuan" required>
+            <option value="QRIS / Merchant">QRIS / Merchant</option>
+            <option value="E-Wallet">E-Wallet (OVO/ShopeePay/DANA)</option>
+            <option value="Bank BNI">Bank BNI (Tabungan)</option>
+            <option value="Bank Lain">Bank Lain (BCA/Mandiri/BRI/dll)</option>
+            <option value="Cash / Cashout">Cash / Tarik Tunai</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="keterangan">Nama Penerima / Catatan</label>
+          <input type="text" id="keterangan" placeholder="Contoh: Makan siang, TF ke BNI, dll" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Tambah Catatan</button>
+      </form>
+    </section>
+
+    <!-- Riwayat Transaksi -->
+    <section class="history-section">
+      <div class="history-header">
+        <h2>Riwayat Transaksi</h2>
+        <button id="btn-pdf" class="btn-pdf">📄 Download Laporan PDF</button>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Tipe</th>
+              <th>Penerima / Media</th>
+              <th>Keterangan</th>
+              <th>Nominal</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="transaction-list">
+            <!-- Data transaksi dimasukkan lewat JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

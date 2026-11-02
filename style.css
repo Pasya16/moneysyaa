@@ -1,0 +1,204 @@
+:root {
+  --bg-color: #FAF7F2;
+  --card-bg: #FFFFFF;
+  --text-main: #4A4A4A;
+  --text-muted: #7C7C7C;
+  --border-color: #E8E2D9;
+  
+  /* Pastel Palette */
+  --pastel-blue: #D4E6F1;
+  --pastel-green: #D5E8D4;
+  --pastel-purple: #E1D5E7;
+  --pastel-peach: #FFE6CC;
+  --pastel-pink: #F8CECC;
+  --btn-hover: #E3D3C3;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 850px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.header p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Metric Cards */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.card {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  border: 1fr solid var(--border-color);
+  position: relative;
+}
+
+.card-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.card-gopay { background-color: var(--pastel-blue); }
+.card-bni { background-color: var(--pastel-green); }
+.card-total { background-color: var(--pastel-purple); }
+
+.card h3 {
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.card .balance {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+/* Form Section */
+.form-section, .history-section {
+  background: var(--card-bg);
+  padding: 22px;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  margin-bottom: 25px;
+}
+
+.form-section h2, .history-header h2 {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 5px;
+  color: var(--text-muted);
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background-color: #FAFAFA;
+  outline: none;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background-color: var(--pastel-peach);
+  color: var(--text-main);
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #F5D6B3;
+}
+
+/* History & PDF Button */
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-pdf {
+  background-color: var(--pastel-pink);
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.btn-pdf:hover {
+  background-color: #F2B9B7;
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+th {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-pengeluaran { background-color: var(--pastel-pink); }
+.badge-pemasukan { background-color: var(--pastel-green); }
+.badge-tabung { background-color: var(--pastel-blue); }
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: #E74C3C;
+  cursor: pointer;
+  font-weight: bold;
+}
