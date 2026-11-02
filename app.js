@@ -4,11 +4,11 @@ const form = document.getElementById('finance-form');
 const list = document.getElementById('transaction-list');
 const btnPdf = document.getElementById('btn-pdf');
 const selectTipe = document.getElementById('tipe');
+const inputNominal = document.getElementById('nominal');
 
 // Element Dynamic Form Fields
 const modeIndicator = document.getElementById('mode-indicator');
 const groupTujuan = document.getElementById('group-tujuan');
-const groupKeterangan = document.getElementById('group-keterangan');
 const labelKeterangan = document.getElementById('label-keterangan');
 const inputKeterangan = document.getElementById('keterangan');
 
@@ -17,7 +17,7 @@ const elGopay = document.getElementById('saldo-gopay');
 const elBni = document.getElementById('saldo-bni');
 const elTotal = document.getElementById('saldo-total');
 
-// Format Angka Rupiah
+// Format Angka ke Rupiah Teks
 function formatRupiah(number) {
   const rounded = Math.round(number);
   return new Intl.NumberFormat('id-ID', { 
@@ -27,7 +27,17 @@ function formatRupiah(number) {
   }).format(rounded);
 }
 
-// Logika Perubahan Tampilan Form berdasarkan Tipe Transaksi
+// Format Input Angka dengan Titik Ribuan Otomatis saat Ngetik
+inputNominal.addEventListener('input', (e) => {
+  let value = e.target.value.replace(/\D/g, '');
+  if (value) {
+    e.target.value = new Intl.NumberFormat('id-ID').format(parseInt(value, 10));
+  } else {
+    e.target.value = '';
+  }
+});
+
+// Logika Perubahan Tampilan Form (Laptop & HP Touch Compatible)
 function handleFormLayoutChange() {
   const tipe = selectTipe.value;
 
@@ -35,7 +45,6 @@ function handleFormLayoutChange() {
     modeIndicator.textContent = "Mode: Pemasukan / Top-Up";
     modeIndicator.style.color = "#27AE60";
     
-    // Pemasukan tidak butuh memilih tujuan/penerima (otomatis ke GoPay)
     groupTujuan.classList.add('hidden-field');
     labelKeterangan.textContent = "Sumber Pemasukan";
     inputKeterangan.placeholder = "Contoh: Uang Saku, Transfer Teman, dll";
@@ -113,7 +122,14 @@ form.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const tipe = selectTipe.value;
-  const nominal = Math.round(parseFloat(document.getElementById('nominal').value));
+  const rawNominal = inputNominal.value.replace(/\./g, '');
+  const nominal = Math.round(parseFloat(rawNominal));
+
+  if (!nominal || isNaN(nominal)) {
+    alert("Masukkan nominal angka yang valid!");
+    return;
+  }
+
   let tujuan = document.getElementById('tujuan').value;
   const keterangan = inputKeterangan.value;
 
@@ -137,8 +153,9 @@ function deleteTransaction(index) {
   updateDashboard();
 }
 
-// Listener Perubahan Dropdown Tipe
+// Listener Perubahan Dropdown Tipe (Dual Event untuk HP & Laptop)
 selectTipe.addEventListener('change', handleFormLayoutChange);
+selectTipe.addEventListener('input', handleFormLayoutChange);
 
 // Export PDF
 btnPdf.addEventListener('click', () => {
