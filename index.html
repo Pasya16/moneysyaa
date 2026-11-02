@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Catatan Keuangan Soft Pastel</title>
+  <title>Moneysyaa - Personal Finance</title>
   <link rel="stylesheet" href="style.css">
-  <!-- CDN untuk cetak PDF otomatis -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
-  <div class="container">
+  <div class="container fade-in">
     <header class="header">
-      <h1>My Wallet Tracker ✨</h1>
-      <p>Pencatat Alokasi GoPay & Tabungan BNI</p>
+      <h1>Moneysyaa</h1>
+      <p>Catatan Alokasi GoPay & Tabungan BNI</p>
     </header>
 
     <!-- Cards Ringkasan Saldo -->
@@ -35,41 +34,45 @@
       </div>
     </section>
 
-    <!-- Form Input Transaksi -->
+    <!-- Form Input Transaksi Dinamis -->
     <section class="form-section">
-      <h2>+ Catat Transaksi</h2>
+      <div class="section-title">
+        <h2>Tambah Transaksi</h2>
+        <span class="subtitle-mode" id="mode-indicator">Mode: Pengeluaran</span>
+      </div>
+      
       <form id="finance-form">
-        <div class="form-group">
-          <label for="tipe">Jenis Transaksi</label>
+        <div class="form-group form-highlight">
+          <label for="tipe">Pilih Jenis Transaksi</label>
           <select id="tipe" required>
-            <option value="pengeluaran">Pengeluaran (Potong GoPay)</option>
-            <option value="pemasukan">Pemasukan / Top-Up (Ke GoPay)</option>
-            <option value="tabung">Nabung (Transfer GoPay → BNI)</option>
+            <option value="pengeluaran">Pengeluaran (Bayar / Jajan)</option>
+            <option value="pemasukan">Pemasukan (Top-Up / Transfer Masuk)</option>
+            <option value="tabung">Nabung (Transfer GoPay ke BNI)</option>
           </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group expand-field" id="group-nominal">
           <label for="nominal">Nominal (Rp)</label>
-          <input type="number" id="nominal" placeholder="Contoh: 25000" required>
+          <input type="number" id="nominal" placeholder="Masukkan jumlah uang" required>
         </div>
 
-        <div class="form-group">
-          <label for="tujuan">Jenis Media / Penerima</label>
-          <select id="tujuan" required>
-            <option value="QRIS / Merchant">QRIS / Merchant</option>
+        <div class="form-group expand-field" id="group-tujuan">
+          <label for="tujuan">Metode / Media Penerima</label>
+          <select id="tujuan">
+            <option value="QRIS / Merchant">QRIS / Merchant (Toko/Kantin)</option>
             <option value="E-Wallet">E-Wallet (OVO/ShopeePay/DANA)</option>
-            <option value="Bank BNI">Bank BNI (Tabungan)</option>
-            <option value="Bank Lain">Bank Lain (BCA/Mandiri/BRI/dll)</option>
-            <option value="Cash / Cashout">Cash / Tarik Tunai</option>
+            <option value="Bank BNI">Bank BNI</option>
+            <option value="Bank Lain">Bank Lain (BCA/Mandiri/BRI)</option>
+            <option value="Cash / Cashout">Tarik Tunai / Cash</option>
           </select>
         </div>
 
-        <div class="form-group">
-          <label for="keterangan">Nama Penerima / Catatan</label>
-          <input type="text" id="keterangan" placeholder="Contoh: Makan siang, TF ke BNI, dll" required>
+        <div class="form-group expand-field" id="group-keterangan">
+          <label for="keterangan" id="label-keterangan">Nama Penerima / Catatan</label>
+          <input type="text" id="keterangan" placeholder="Contoh: Makan siang, Beli Kuota, dll" required>
         </div>
 
-        <button type="submit" class="btn-primary">Tambah Catatan</button>
+        <button type="submit" class="btn-primary" id="btn-submit">Simpan Catatan Transaksi</button>
       </form>
     </section>
 
@@ -77,7 +80,7 @@
     <section class="history-section">
       <div class="history-header">
         <h2>Riwayat Transaksi</h2>
-        <button id="btn-pdf" class="btn-pdf">📄 Download Laporan PDF</button>
+        <button id="btn-pdf" class="btn-pdf">Export PDF</button>
       </div>
       <div class="table-responsive">
         <table>
@@ -92,7 +95,6 @@
             </tr>
           </thead>
           <tbody id="transaction-list">
-            <!-- Data transaksi dimasukkan lewat JS -->
           </tbody>
         </table>
       </div>

@@ -3,13 +3,21 @@ let transactions = JSON.parse(localStorage.getItem('my_finance_data')) || [];
 const form = document.getElementById('finance-form');
 const list = document.getElementById('transaction-list');
 const btnPdf = document.getElementById('btn-pdf');
+const selectTipe = document.getElementById('tipe');
+
+// Element Dynamic Form Fields
+const modeIndicator = document.getElementById('mode-indicator');
+const groupTujuan = document.getElementById('group-tujuan');
+const groupKeterangan = document.getElementById('group-keterangan');
+const labelKeterangan = document.getElementById('label-keterangan');
+const inputKeterangan = document.getElementById('keterangan');
 
 // Element Saldo
 const elGopay = document.getElementById('saldo-gopay');
 const elBni = document.getElementById('saldo-bni');
 const elTotal = document.getElementById('saldo-total');
 
-// Format Rupiah (Pakai Math.round biar tidak ada bug 299999)
+// Format Angka Rupiah
 function formatRupiah(number) {
   const rounded = Math.round(number);
   return new Intl.NumberFormat('id-ID', { 
@@ -19,7 +27,38 @@ function formatRupiah(number) {
   }).format(rounded);
 }
 
-// Update Perhitungan Saldo & Tampilan
+// Logika Perubahan Tampilan Form berdasarkan Tipe Transaksi
+function handleFormLayoutChange() {
+  const tipe = selectTipe.value;
+
+  if (tipe === 'pemasukan') {
+    modeIndicator.textContent = "Mode: Pemasukan / Top-Up";
+    modeIndicator.style.color = "#27AE60";
+    
+    // Pemasukan tidak butuh memilih tujuan/penerima (otomatis ke GoPay)
+    groupTujuan.classList.add('hidden-field');
+    labelKeterangan.textContent = "Sumber Pemasukan";
+    inputKeterangan.placeholder = "Contoh: Uang Saku, Transfer Teman, dll";
+
+  } else if (tipe === 'pengeluaran') {
+    modeIndicator.textContent = "Mode: Pengeluaran (Bayar)";
+    modeIndicator.style.color = "#C0392B";
+
+    groupTujuan.classList.remove('hidden-field');
+    labelKeterangan.textContent = "Nama Penerima / Catatan";
+    inputKeterangan.placeholder = "Contoh: Makan siang, Beli Kuota, dll";
+
+  } else if (tipe === 'tabung') {
+    modeIndicator.textContent = "Mode: Nabung (GoPay ke BNI)";
+    modeIndicator.style.color = "#2980B9";
+
+    groupTujuan.classList.add('hidden-field');
+    labelKeterangan.textContent = "Catatan Tabungan";
+    inputKeterangan.placeholder = "Contoh: Menyisihkan sisa mingguan";
+  }
+}
+
+// Update Saldo & LocalStorage
 function updateDashboard() {
   let gopay = 0;
   let bni = 0;
@@ -44,12 +83,12 @@ function updateDashboard() {
   localStorage.setItem('my_finance_data', JSON.stringify(transactions));
 }
 
-// Render Tabel Riwayat
+// Render Tabel Riwayat Transaksi
 function renderList() {
   list.innerHTML = '';
   
   if (transactions.length === 0) {
-    list.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#A0A0A0; padding:20px;">Belum ada catatan transaksi ✨</td></tr>`;
+    list.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#A0A0A0; padding:25px;">Belum ada catatan transaksi</td></tr>`;
     return;
   }
 
@@ -63,27 +102,33 @@ function renderList() {
       <td><strong>${item.tujuan}</strong></td>
       <td>${item.keterangan}</td>
       <td class="amount">${formatRupiah(item.nominal)}</td>
-      <td><button class="btn-delete" onclick="deleteTransaction(${realIndex})" title="Hapus">✕</button></td>
+      <td><button class="btn-delete" onclick="deleteTransaction(${realIndex})" title="Hapus">X</button></td>
     `;
     list.appendChild(tr);
   });
 }
 
-// Tambah Transaksi Baru
+// Submit Form
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
-  const tipe = document.getElementById('tipe').value;
-  // Gunakan Math.round agar input selalu bulat
+  const tipe = selectTipe.value;
   const nominal = Math.round(parseFloat(document.getElementById('nominal').value));
-  const tujuan = document.getElementById('tujuan').value;
-  const keterangan = document.getElementById('keterangan').value;
+  let tujuan = document.getElementById('tujuan').value;
+  const keterangan = inputKeterangan.value;
+
+  if (tipe === 'pemasukan') {
+    tujuan = "Top-Up GoPay";
+  } else if (tipe === 'tabung') {
+    tujuan = "Bank BNI (Tabungan)";
+  }
 
   const today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 
   transactions.push({ tanggal: today, tipe, nominal, tujuan, keterangan });
   updateDashboard();
   form.reset();
+  handleFormLayoutChange();
 });
 
 // Hapus Transaksi
@@ -92,7 +137,10 @@ function deleteTransaction(index) {
   updateDashboard();
 }
 
-// Fitur Download PDF Laporan
+// Listener Perubahan Dropdown Tipe
+selectTipe.addEventListener('change', handleFormLayoutChange);
+
+// Export PDF
 btnPdf.addEventListener('click', () => {
   if (transactions.length === 0) {
     alert("Belum ada data transaksi untuk dicetak!");
@@ -121,11 +169,12 @@ btnPdf.addEventListener('click', () => {
     head: [['Tanggal', 'Tipe', 'Penerima / Media', 'Keterangan', 'Nominal']],
     body: tableData,
     theme: 'striped',
-    headStyles: { fillColor: [230, 215, 235], textColor: [74, 74, 74] }
+    headStyles: { fillColor: [240, 230, 245], textColor: [61, 64, 91] }
   });
 
   doc.save(`Laporan-Moneysyaa-${Date.now()}.pdf`);
 });
 
-// Load awal
+// Inisialisasi awal
+handleFormLayoutChange();
 updateDashboard();
