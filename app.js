@@ -9,9 +9,14 @@ const elGopay = document.getElementById('saldo-gopay');
 const elBni = document.getElementById('saldo-bni');
 const elTotal = document.getElementById('saldo-total');
 
-// Format Rupiah
+// Format Rupiah (Pakai Math.round biar tidak ada bug 299999)
 function formatRupiah(number) {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+  const rounded = Math.round(number);
+  return new Intl.NumberFormat('id-ID', { 
+    style: 'currency', 
+    currency: 'IDR', 
+    maximumFractionDigits: 0 
+  }).format(rounded);
 }
 
 // Update Perhitungan Saldo & Tampilan
@@ -20,7 +25,7 @@ function updateDashboard() {
   let bni = 0;
 
   transactions.forEach(item => {
-    const nominal = parseFloat(item.nominal);
+    const nominal = Math.round(parseFloat(item.nominal) || 0);
     if (item.tipe === 'pemasukan') {
       gopay += nominal;
     } else if (item.tipe === 'pengeluaran') {
@@ -42,6 +47,12 @@ function updateDashboard() {
 // Render Tabel Riwayat
 function renderList() {
   list.innerHTML = '';
+  
+  if (transactions.length === 0) {
+    list.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#A0A0A0; padding:20px;">Belum ada catatan transaksi ✨</td></tr>`;
+    return;
+  }
+
   transactions.slice().reverse().forEach((item, index) => {
     const realIndex = transactions.length - 1 - index;
     const tr = document.createElement('tr');
@@ -49,10 +60,10 @@ function renderList() {
     tr.innerHTML = `
       <td>${item.tanggal}</td>
       <td><span class="badge badge-${item.tipe}">${item.tipe.toUpperCase()}</span></td>
-      <td>${item.tujuan}</td>
+      <td><strong>${item.tujuan}</strong></td>
       <td>${item.keterangan}</td>
-      <td>${formatRupiah(item.nominal)}</td>
-      <td><button class="btn-delete" onclick="deleteTransaction(${realIndex})">✕</button></td>
+      <td class="amount">${formatRupiah(item.nominal)}</td>
+      <td><button class="btn-delete" onclick="deleteTransaction(${realIndex})" title="Hapus">✕</button></td>
     `;
     list.appendChild(tr);
   });
@@ -63,7 +74,8 @@ form.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const tipe = document.getElementById('tipe').value;
-  const nominal = parseFloat(document.getElementById('nominal').value);
+  // Gunakan Math.round agar input selalu bulat
+  const nominal = Math.round(parseFloat(document.getElementById('nominal').value));
   const tujuan = document.getElementById('tujuan').value;
   const keterangan = document.getElementById('keterangan').value;
 
@@ -82,15 +94,18 @@ function deleteTransaction(index) {
 
 // Fitur Download PDF Laporan
 btnPdf.addEventListener('click', () => {
+  if (transactions.length === 0) {
+    alert("Belum ada data transaksi untuk dicetak!");
+    return;
+  }
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
   doc.setFontSize(16);
-  doc.text("Laporan Catatan Keuangan", 14, 15);
+  doc.text("Laporan Catatan Keuangan - Moneysyaa", 14, 15);
   doc.setFontSize(10);
   doc.text(`Dicetak pada: ${new Date().toLocaleDateString('id-ID')}`, 14, 22);
-
-  // Ringkasan di PDF
   doc.text(`Saldo GoPay: ${elGopay.textContent} | Tabungan BNI: ${elBni.textContent}`, 14, 28);
 
   const tableData = transactions.map(t => [
@@ -106,10 +121,10 @@ btnPdf.addEventListener('click', () => {
     head: [['Tanggal', 'Tipe', 'Penerima / Media', 'Keterangan', 'Nominal']],
     body: tableData,
     theme: 'striped',
-    headStyles: { fillColor: [212, 230, 241], textColor: [50, 50, 50] }
+    headStyles: { fillColor: [230, 215, 235], textColor: [74, 74, 74] }
   });
 
-  doc.save(`Laporan-Keuangan-${Date.now()}.pdf`);
+  doc.save(`Laporan-Moneysyaa-${Date.now()}.pdf`);
 });
 
 // Load awal
